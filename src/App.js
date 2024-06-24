@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState,useCallback } from 'react';
 
 import MoviesList from './components/MoviesList';
 import './App.css';
@@ -7,12 +7,12 @@ function App() {
   const [movies,setMovieData]=useState([])
   const [isloading,setIsLoading] = useState(false);
   const[error,setError] = useState(null)
-  const[retry,setRetry]=useState(true)
-   const fetchmovieHandler = async()=>{
+  
+   const fetchmovieHandler =useCallback( async ()=>{
       setError(null)
       setIsLoading(true)
       try{
-    const response = await fetch("https://swapi.dev/api/film/")
+    const response = await fetch("https://swapi.dev/api/films/")
      if(!response.ok){
       throw new  Error("Something went wrong ....Retrying'")
      }
@@ -32,7 +32,12 @@ function App() {
      setError(e.message)
   }
   setIsLoading(false)
-   }
+   },[])
+   
+   useEffect(()=>{
+    fetchmovieHandler()
+    console.log("use effect called")
+ },[fetchmovieHandler])
   
    
    let content = <p>no movies found</p>;
@@ -48,21 +53,13 @@ function App() {
    if(isloading){
     content=<p>loading...</p>
    }
-   if(retry){
-    setInterval(() => {
-      fetchmovieHandler()
-    }, 5000);
-  }
-   const cancelRetryHandler = ()=>{
-    
-    setRetry(false)
-   }
+  
    
   return (
     <React.Fragment>
       <section>
         <button onClick={fetchmovieHandler}>Fetch Movies</button>
-        <button onClick={cancelRetryHandler}>cancel retry</button>
+        
       </section>
       <section>
        {content}
