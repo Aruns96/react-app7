@@ -13,21 +13,26 @@ function App() {
       setError(null)
       setIsLoading(true)
       try{
-    const response = await fetch("https://swapi.dev/api/films/")
+    const response = await fetch("https://react-http-b0681-default-rtdb.firebaseio.com/movies.json")
      if(!response.ok){
       throw new  Error("Something went wrong ....Retrying'")
      }
     const data= await response.json();
+    //console.log(data)
+    const loadedMovies = [];
 
-      const tansformedData = data.results.map(i=>{
-        return {
-           id:i.episode_id,
-           title:i.title,
-           desc:i.opening_crawl,
-           date:i.release_date
-      }
-    })
-      setMovieData(tansformedData)
+    for (let key in data){
+      loadedMovies.push({
+        id:key,
+        title:data[key].title,
+        desc:data[key].about,
+        date:data[key].date
+      })
+    }
+
+
+     
+      setMovieData(loadedMovies)
       
   }catch(e){
      setError(e.message)
@@ -40,10 +45,36 @@ function App() {
     console.log("use effect called")
  },[fetchmovieHandler])
   
-   
+//  const deleteMovieHandler = async(id)=>{
+//   console.log("id",id)
+//   const response = await fetch(`https://react-http-b0681-default-rtdb.firebaseio.com/movies.json/${id}`,{
+//     method:"DELETE"
+//   })
+//   const data = await response.json()
+//   console.log(response,data)
+//  }
+const deleteMovieHandler= async(id) =>{
+  console.log(id)
+  const deleteUrl = `https://react-http-b0681-default-rtdb.firebaseio.com/movies.json/${id}`; // Replace with your actual API endpoint for deletion
+  const response = await fetch(deleteUrl, {
+    method: 'DELETE',
+    headers:{
+      "Content-Type":"application/json"
+    },
+    
+  });
+  if (!response.ok) {
+    console.error(`Error deleting movie with ID ${id}:`, response.statusText);
+  } else {
+    console.log(`Movie with ID ${id} deleted successfully.`);
+  }
+
+}
+ 
+
    let content = <p>no movies found</p>;
    if(movies.length > 0){
-    content = <MoviesList movies={movies} />
+    content = <MoviesList movies={movies} onDelete={deleteMovieHandler}/>
    }
    if(error){
     content=<p>{error}</p>
@@ -54,12 +85,25 @@ function App() {
    if(isloading){
     content=<p>loading...</p>
    }
-  
+   const addMovieHandler = async (movie)=>{
+    
+    const response = await fetch("https://react-http-b0681-default-rtdb.firebaseio.com/movies.json",{
+      method:"POST",
+      body:JSON.stringify(movie),
+      headers:{
+        "Content-Type":"application/json"
+      }
+    })
+    const data = await response.json()
+    console.log(data)
+   }
+    
+   
    
   return (
     <React.Fragment>
       <section>
-        <MovieForm />
+        <MovieForm onAddMovie={addMovieHandler}/>
       </section>
       <section>
         <button onClick={fetchmovieHandler}>Fetch Movies</button>

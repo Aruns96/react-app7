@@ -1,7 +1,8 @@
+import classes from "./MovieForm.module.css"
 import { useState } from "react"
 import React from 'react'
 
-const MovieForm = () => {
+const MovieForm = (props) => {
     const[title,setTitle] =useState("")
     const [date,setDate] = useState("")
     const [about,setAbout]=useState("")
@@ -12,7 +13,7 @@ const MovieForm = () => {
                 date:date,
                 about:about
              }
-             console.log("data",data)
+             props.onAddMovie(data)
              
     }
     const titleHandler = (e)=>{
@@ -26,17 +27,21 @@ const MovieForm = () => {
     }
   return (
     <form onSubmit={submitHandler}>
+         <div className={classes.control}>
       <label>title</label>
      <input type="text" value={title} onChange={titleHandler} />
-      <br/>
+     </div>
+     <div className={classes.control}>
       <label>release date</label>
       <input type='date' value={date} onChange={dateHandler}/>
-      <br/>
-      <label>about</label>
+      </div>
+      <div className={classes.control}>
+      <label>opening text</label>
       <input type='text' value={about} onChange={aboutHandler}/>
-      <br/>
+      </div>
       <button  type='submit'>Add</button>
     </form>
+     
   )
 }
 
