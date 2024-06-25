@@ -2,6 +2,7 @@ import React, { useEffect, useState,useCallback } from 'react';
 
 import MoviesList from './components/MoviesList';
 import './App.css';
+import MovieForm from './components/MovieForm';
 
 function App() {
   const [movies,setMovieData]=useState([])
@@ -33,7 +34,7 @@ function App() {
   }
   setIsLoading(false)
    },[])
-   
+
    useEffect(()=>{
     fetchmovieHandler()
     console.log("use effect called")
@@ -57,6 +58,9 @@ function App() {
    
   return (
     <React.Fragment>
+      <section>
+        <MovieForm />
+      </section>
       <section>
         <button onClick={fetchmovieHandler}>Fetch Movies</button>
         
